@@ -5,11 +5,12 @@ import (
 	"books-list/utils"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 type Controller struct{}
@@ -74,7 +75,7 @@ func (c Controller) UpdateBook(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// RemoveBook delete a book by id
+// RemoveBook deletes a book by id
 func (c Controller) RemoveBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book

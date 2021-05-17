@@ -27,7 +27,7 @@ func (c Controller) GetBooks(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// GetBook find a book by id
+// GetBook finds a book by id
 func (c Controller) GetBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book

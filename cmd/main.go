@@ -8,7 +8,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/subosito/gotenv"
 )
+
+func init() {
+	err := gotenv.Load("../.env")
+	fmt.Println("in init func.")
+	utils.LogFatal(err)
+}
 
 func main() {
 	db := driver.ConnectDB()

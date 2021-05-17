@@ -3,8 +3,8 @@ package main
 import (
 	"books-list/controllers"
 	"books-list/driver"
+	"books-list/utils"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,5 +23,6 @@ func main() {
 	router.HandleFunc("/books/{id}", controller.RemoveBook(db)).Methods("DELETE")
 
 	fmt.Println("Server is running at port 8000")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	err := http.ListenAndServe(":8000", router)
+	utils.LogFatal(err)
 }

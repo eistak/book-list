@@ -1,10 +1,9 @@
-package controllers
+package handlers
 
 import (
 	"books-list/models"
 	"books-list/utils"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,22 +12,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type Controller struct{}
+type Handler struct{}
 
 var books []models.Book
 
 // GetBooks finds all books
-func (c Controller) GetBooks(db *gorm.DB) http.HandlerFunc {
+func (h Handler) GetBooks(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		books = []models.Book{}
 		db.Find(&books)
-
 		json.NewEncoder(w).Encode(books)
+
+		log.Println("GetBooks func.")
+		w.Header().Set("Content-Type", "application/json")
+		utils.SendSuccess(w, books)
 	}
 }
 
 // GetBook finds a book by id
-func (c Controller) GetBook(db *gorm.DB) http.HandlerFunc {
+func (h Handler) GetBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
 
@@ -37,15 +39,17 @@ func (c Controller) GetBook(db *gorm.DB) http.HandlerFunc {
 		if result.Error != nil {
 			log.Println(result.Error)
 		}
+		log.Println("GetBook func.")
 		log.Println(result.RowsAffected)
-		fmt.Println("added.")
 
 		json.NewEncoder(w).Encode(book.ID)
+		w.Header().Set("Content-Type", "application/json")
+		utils.SendSuccess(w, books)
 	}
 }
 
 // AddBook adds a book
-func (c Controller) AddBook(db *gorm.DB) http.HandlerFunc {
+func (h Handler) AddBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
 
@@ -54,29 +58,31 @@ func (c Controller) AddBook(db *gorm.DB) http.HandlerFunc {
 		if result.Error != nil {
 			log.Println(result.Error)
 		}
+		log.Println("AddBook func.")
 		log.Println(result.RowsAffected)
-		fmt.Println("added.")
 
 		json.NewEncoder(w).Encode(book.ID)
+		w.Header().Set("Content-Type", "text/plan")
+		utils.SendSuccess(w, book.ID)
 	}
 }
 
 // UpdateBook updates a book by id
-func (c Controller) UpdateBook(db *gorm.DB) http.HandlerFunc {
+func (h Handler) UpdateBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
 
 		json.NewDecoder(r.Body).Decode(&book)
 		db.Save(&book)
+		log.Println("UpdateBook func.")
+		log.Println(book.ID)
 
-		fmt.Println(book.ID)
-		log.Println("updated.")
 		json.NewEncoder(w).Encode(book.ID)
 	}
 }
 
 // RemoveBook deletes a book by id
-func (c Controller) RemoveBook(db *gorm.DB) http.HandlerFunc {
+func (h Handler) RemoveBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
 		params := mux.Vars(r)
@@ -85,14 +91,16 @@ func (c Controller) RemoveBook(db *gorm.DB) http.HandlerFunc {
 		book.ID, err = strconv.Atoi(params["id"])
 		utils.LogFatal(err)
 
-		log.Println(book.ID)
 		result := db.Delete(&book, book.ID)
 		if result.Error != nil {
 			log.Println(result.Error)
 		}
+		log.Println("RemoveBook func.")
+		log.Println(book.ID)
 		log.Println(result.RowsAffected)
-		fmt.Println("deleted.")
 
 		json.NewEncoder(w).Encode(book.ID)
+		w.Header().Set("Content-Type", "text/plain")
+		utils.SendSuccess(w, book.ID)
 	}
 }

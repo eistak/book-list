@@ -1,8 +1,8 @@
 package main
 
 import (
-	"books-list/controllers"
 	"books-list/driver"
+	"books-list/handlers"
 	"books-list/utils"
 	"fmt"
 	"net/http"
@@ -13,21 +13,20 @@ import (
 
 func init() {
 	err := gotenv.Load("../.env")
-	fmt.Println("in init func.")
 	utils.LogFatal(err)
 }
 
 func main() {
 	db := driver.ConnectDB()
-	controller := controllers.Controller{}
+	handlers := handlers.Handler{}
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/books", controller.GetBooks(db)).Methods("GET")
-	router.HandleFunc("/books/{id}", controller.GetBook(db)).Methods("GET")
-	router.HandleFunc("/books", controller.AddBook(db)).Methods("POST")
-	router.HandleFunc("/books", controller.UpdateBook(db)).Methods("PUT")
-	router.HandleFunc("/books/{id}", controller.RemoveBook(db)).Methods("DELETE")
+	router.HandleFunc("/books", handlers.GetBooks(db)).Methods("GET")
+	router.HandleFunc("/books/{id}", handlers.GetBook(db)).Methods("GET")
+	router.HandleFunc("/books", handlers.AddBook(db)).Methods("POST")
+	router.HandleFunc("/books", handlers.UpdateBook(db)).Methods("PUT")
+	router.HandleFunc("/books/{id}", handlers.RemoveBook(db)).Methods("DELETE")
 
 	fmt.Println("Server is running at port 8000")
 	err := http.ListenAndServe(":8000", router)

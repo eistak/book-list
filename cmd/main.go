@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	gh "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
 )
@@ -29,6 +30,8 @@ func main() {
 	router.HandleFunc("/books/{id}", handlers.RemoveBook(db)).Methods("DELETE")
 
 	fmt.Println("Server is running at port 8000")
-	err := http.ListenAndServe(":8000", router)
+	err := http.ListenAndServe(":8000", gh.CORS(gh.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		gh.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}),
+		gh.AllowedOrigins([]string{"*"}))(router))
 	utils.LogFatal(err)
 }

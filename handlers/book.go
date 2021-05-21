@@ -33,11 +33,14 @@ func (h Handler) GetBooks(db *gorm.DB) http.HandlerFunc {
 func (h Handler) GetBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		var error models.Error
 
 		json.NewDecoder(r.Body).Decode(&book)
 		result := db.Create(&book)
 		if result.Error != nil {
 			log.Println(result.Error)
+			utils.SendError(w, http.StatusInternalServerError, error)
+			return
 		}
 		log.Println("GetBook func.")
 		log.Println(result.RowsAffected)
@@ -52,11 +55,21 @@ func (h Handler) GetBook(db *gorm.DB) http.HandlerFunc {
 func (h Handler) AddBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		var error models.Error
 
 		json.NewDecoder(r.Body).Decode(&book)
+
+		if book.Author == "" || book.Title == "" || book.Year == "" {
+			error.Message = "All fileds are required."
+			utils.SendError(w, http.StatusBadRequest, error)
+			return
+		}
+
 		result := db.Create(&book)
 		if result.Error != nil {
 			log.Println(result.Error)
+			utils.SendError(w, http.StatusInternalServerError, error)
+			return
 		}
 		log.Println("AddBook func.")
 		log.Println(result.RowsAffected)
@@ -71,8 +84,16 @@ func (h Handler) AddBook(db *gorm.DB) http.HandlerFunc {
 func (h Handler) UpdateBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		var error models.Error
 
 		json.NewDecoder(r.Body).Decode(&book)
+
+		if book.ID == 0 || book.Author == "" || book.Title == "" || book.Year == "" {
+			error.Message = "All fileds are required."
+			utils.SendError(w, http.StatusBadRequest, error)
+			return
+		}
+
 		db.Save(&book)
 		log.Println("UpdateBook func.")
 		log.Println(book.ID)
@@ -85,15 +106,16 @@ func (h Handler) UpdateBook(db *gorm.DB) http.HandlerFunc {
 func (h Handler) RemoveBook(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		var error models.Error
 		params := mux.Vars(r)
 
-		var err error
-		book.ID, err = strconv.Atoi(params["id"])
-		utils.LogFatal(err)
+		book.ID, _ = strconv.Atoi(params["id"])
 
 		result := db.Delete(&book, book.ID)
 		if result.Error != nil {
 			log.Println(result.Error)
+			utils.SendError(w, http.StatusInternalServerError, error)
+			return
 		}
 		log.Println("RemoveBook func.")
 		log.Println(book.ID)

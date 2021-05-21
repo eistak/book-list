@@ -2,6 +2,5 @@
 .git
 .idea
 .env
-go.sum
 Dockerfile
 Makefile

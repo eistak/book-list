@@ -25,7 +25,6 @@ func (h Handler) GetBooks(db *gorm.DB) http.HandlerFunc {
 
 		log.Println("GetBooks func.")
 		w.Header().Set("Content-Type", "application/json")
-		// utils.SendSuccess(w, books)
 	}
 }
 
@@ -47,7 +46,6 @@ func (h Handler) GetBook(db *gorm.DB) http.HandlerFunc {
 
 		json.NewEncoder(w).Encode(book.ID)
 		w.Header().Set("Content-Type", "application/json")
-		// utils.SendSuccess(w, books)
 	}
 }
 
@@ -76,7 +74,6 @@ func (h Handler) AddBook(db *gorm.DB) http.HandlerFunc {
 
 		json.NewEncoder(w).Encode(book.ID)
 		w.Header().Set("Content-Type", "text/plan")
-		// utils.SendSuccess(w, book.ID)
 	}
 }
 
@@ -123,6 +120,5 @@ func (h Handler) RemoveBook(db *gorm.DB) http.HandlerFunc {
 
 		json.NewEncoder(w).Encode(book.ID)
 		w.Header().Set("Content-Type", "text/plain")
-		// utils.SendSuccess(w, book.ID)
 	}
 }

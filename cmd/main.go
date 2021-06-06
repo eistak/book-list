@@ -1,25 +1,24 @@
 package main
 
 import (
-	"books-list/driver"
-	"books-list/handlers"
-	"books-list/utils"
+	"books-list/api"
+	"books-list/tools"
 	"fmt"
 	"net/http"
 
-	gh "github.com/gorilla/handlers"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
 )
 
 func init() {
 	err := gotenv.Load("../.env")
-	utils.LogFatal(err)
+	tools.LogFatal(err)
 }
 
 func main() {
-	db := driver.ConnectDB()
-	h := handlers.Handler{}
+	db := tools.ConnectDB()
+	h := api.Api{}
 
 	router := mux.NewRouter()
 
@@ -30,8 +29,8 @@ func main() {
 	router.HandleFunc("/books/{id}", h.RemoveBook(db)).Methods("DELETE")
 
 	fmt.Println("Server is running at port 8000")
-	err := http.ListenAndServe(":8000", gh.CORS(gh.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		gh.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}),
-		gh.AllowedOrigins([]string{"*"}))(router))
-	utils.LogFatal(err)
+	err := http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}))(router))
+	tools.LogFatal(err)
 }
